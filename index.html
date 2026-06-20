@@ -162,7 +162,8 @@
 
     <script>
         function openFullscreen() {
-            var bibValue = document.getElementById('bibNumber').value.trim();
+            var inputElem = document.getElementById('bibNumber');
+            var bibValue = inputElem.value.trim();
             
             if (bibValue === "") {
                 alert("Silakan ketik nomor BIB terlebih dahulu!");
@@ -176,6 +177,9 @@
 
             document.getElementById('fullscreenOverlay').style.display = 'flex';
             
+            // Mengosongkan kembali nilai BIB setelah eksekusi
+            inputElem.value = "";
+
             var elem = document.documentElement;
             if (elem.requestFullscreen) {
                 elem.requestFullscreen();
@@ -198,21 +202,17 @@
 
         // Fitur Deteksi Tombol Keyboard
         document.addEventListener('keydown', function(event) {
-            // 1. Fungsi Tombol Enter (Membuka Fullscreen saat fokus di input)
-            if (event.key === "Enter" || event.keyCode === 13) {
-                // Mengecek apakah overlay sedang tersembunyi agar fungsi enter bekerja saat mengetik
-                var overlay = document.getElementById('fullscreenOverlay');
-                if (overlay.style.display !== 'flex') {
-                    openFullscreen();
-                }
+            var overlay = document.getElementById('fullscreenOverlay');
+
+            // Jika overlay sedang aktif/tampil, semua tombol (any key) akan menutup fullscreen
+            if (overlay.style.display === 'flex') {
+                closeFullscreen();
+                return; // Menghentikan eksekusi kode di bawah agar tidak konflik
             }
 
-            // 2. Fungsi Tombol Escape (Menutup Fullscreen)
-            if (event.key === "Escape" || event.keyCode === 27) {
-                var overlay = document.getElementById('fullscreenOverlay');
-                if (overlay.style.display === 'flex') {
-                    closeFullscreen();
-                }
+            // Fungsi Tombol Enter (Membuka Fullscreen saat fokus di input dan overlay tertutup)
+            if ((event.key === "Enter" || event.keyCode === 13) && overlay.style.display !== 'flex') {
+                openFullscreen();
             }
         });
 
